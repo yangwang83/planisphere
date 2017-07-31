@@ -30,7 +30,7 @@ public abstract class Node extends Thread{
 	
 	private NodeIdentifier id;
 	private long timerInterval;
-	private Network network;
+	protected Network network;
 	private EventHook hook = null;
 	
 	/**
@@ -43,7 +43,6 @@ public abstract class Node extends Thread{
 		this.id = id;
 		this.timerInterval = timerInterval;
 		this.network = network;
-		this.network.registerNode(id, this);
 	}
 	
 	public NodeIdentifier getID(){
@@ -102,16 +101,7 @@ public abstract class Node extends Thread{
 	 * @param receiver: the id of the receiver
 	 * @param msg: the message to be sent
 	 */
-	public void sendMessage(NodeIdentifier receiver, Message msg){
-		if(hook == null)
-			this.sendMessageInternal(receiver, msg);
-		else
-			hook.sendMessage(receiver, msg, this);
-	}
-	
-	public void sendMessageInternal(NodeIdentifier receiver, Message msg){
-		this.network.sendMessage(receiver, msg);
-	}
+	public abstract void sendMessage(NodeIdentifier receiver, Message msg);
 
 	/**
 	 * This function will be called periodically.
