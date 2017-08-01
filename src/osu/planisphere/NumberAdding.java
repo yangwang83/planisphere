@@ -41,7 +41,7 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 		
 		public static class ClientNode extends NormalNode {
 			public ClientNode(NodeIdentifier id) {
-				super(id, 5000);
+				super(id, 5000, 0);
 			}
 			public void sendSumMessage(ArrayList<Integer> nums, ArrayList<AddingNode> RegularServers, EntryServerNode other)  //only use on entryservernodes
 			{
@@ -52,6 +52,11 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 			}
 			public void handleMessage(Message msg) {
 				System.out.println(this.getID() + " gets "+msg);
+			}
+			@Override
+			public void start() {
+				// TODO Auto-generated method stub
+				
 			}
 		}
 		public static class EntryServerNode extends AddingNode {
@@ -103,7 +108,7 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 		public static class AddingNode extends NormalNode{
 			public static int currentsum=0;
 			public AddingNode(NodeIdentifier id) {
-				super(id, 5000);
+				super(id, 5000, 0);
 			}
 
 			public void sendOneMessage(NodeIdentifier other, ArrayList<Integer> nums){
@@ -130,6 +135,7 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 			public void handleMessage(Message msg) {
 				currentsum=0;
 			}
+
 			
 		}
 		

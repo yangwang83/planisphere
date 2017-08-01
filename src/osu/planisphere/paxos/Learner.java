@@ -3,8 +3,8 @@ import osu.planisphere.*;
 
 public class Learner extends NormalNode{
 
-	public Learner(NodeIdentifier id, int timerInterval) {
-		super(id, timerInterval);
+	public Learner(NodeIdentifier id, int timerInterval, int debugMode) {
+		super(id, timerInterval, debugMode);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -73,7 +73,7 @@ public abstract class Node extends Thread{
 	public void run(){
 		
 		long lastTimerTime = System.currentTimeMillis();
-		
+		System.out.println("thread started");
 		while(running){
 			try{
 				MessageAndOut msg = incomingQueue.poll(timerInterval/10, TimeUnit.MILLISECONDS);

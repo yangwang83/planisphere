@@ -10,16 +10,19 @@ import java.util.HashMap;
 import osu.planisphere.messages.GetRegistryMessage;
 import osu.planisphere.messages.GetRegistryReplyMessage;
 import osu.planisphere.messages.RegisterMessage;
+import osu.planisphere.messages.ReportActionMessage;
+import osu.planisphere.messages.ReportActionResponseMessage;
 
 public abstract class NormalNode extends Node {
 
 	private Network network;
 	private Socket masterSocket;
-	private ObjectOutputStream oos;
-	ObjectInputStream ois;
+	private ObjectOutputStream masterOut;
+	ObjectInputStream masterIn;
 	private final HashMap<NodeIdentifier, InetSocketAddress> nodes = new HashMap<NodeIdentifier, InetSocketAddress>();
+	private int debugMode = 0; //0 means no debugging; 1 means logging; 2 means using hooks
 	
-	public NormalNode(NodeIdentifier id, int timerInterval) {
+	public NormalNode(NodeIdentifier id, int timerInterval, int debugMode) {
 		super(id, timerInterval);
 		
 		this.network = new Network();
@@ -29,11 +32,10 @@ public abstract class NormalNode extends Node {
 			masterSocket = new Socket();
 			masterSocket.connect(Configuration.masterAddr);
 			
-			oos = new ObjectOutputStream(masterSocket.getOutputStream());
-			oos.writeObject(new RegisterMessage(this.getID(), this.network.getLocalAddress()));
+			masterOut = new ObjectOutputStream(masterSocket.getOutputStream());
+			masterOut.writeObject(new RegisterMessage(this.getID(), this.network.getLocalAddress()));
 			
-			ois = new ObjectInputStream(masterSocket.getInputStream());
-			System.out.println(this.getID()+" sent a registry");
+			masterIn = new ObjectInputStream(masterSocket.getInputStream());
 			
 			
 		}
@@ -41,12 +43,30 @@ public abstract class NormalNode extends Node {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		this.start();
 	}
 	
 	public abstract void handleMessage(Message msg);
 	
+	
 	public void handleMessage(Message msg, ObjectOutputStream out) {
+		if(debugMode > 0){
+			try {
+				masterOut.writeObject(new ReportActionMessage(this.getID(), ReportActionMessage.Timing.before, ReportActionMessage.Action.handle, msg));
+				if(debugMode==2){
+					ReportActionResponseMessage response = (ReportActionResponseMessage)masterIn.readObject();
+					if(response.getResponse() == ReportActionResponseMessage.ActionResponse.dropit)
+						return;
+					else if(response.getResponse() == ReportActionResponseMessage.ActionResponse.killnode)
+						System.exit(0);
+					else if(response.getResponse() == ReportActionResponseMessage.ActionResponse.replace)
+						msg = response.getMessage();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 		handleMessage(msg);
 	}
 
@@ -62,8 +82,8 @@ public abstract class NormalNode extends Node {
 		if(target == null) {
 			
 			try {
-				oos.writeObject(new GetRegistryMessage(this.getID(), receiver));
-				GetRegistryReplyMessage reply = (GetRegistryReplyMessage) ois.readObject();
+				masterOut.writeObject(new GetRegistryMessage(this.getID(), receiver));
+				GetRegistryReplyMessage reply = (GetRegistryReplyMessage) masterIn.readObject();
 				target = reply.getAddress();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

@@ -8,8 +8,8 @@ public class Client extends NormalNode{
 	private int clientSequenceID = 0;
 	private NodeIdentifier leaderID = new NodeIdentifier(Role.ACCEPTOR, 0);
 	
-	public Client(NodeIdentifier id, int timerInterval) {
-		super(id, timerInterval);
+	public Client(NodeIdentifier id, int timerInterval, int debugMode) {
+		super(id, timerInterval, debugMode);
 		// TODO Auto-generated constructor stub
 	}
 	

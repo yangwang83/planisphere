@@ -11,8 +11,8 @@ public class Acceptor extends NormalNode{
 	
 	private TreeMap<Integer, Quorum> outstandingProposals = new TreeMap<Integer, Quorum>();
 	
-	public Acceptor(NodeIdentifier id, int timerInterval) {
-		super(id, timerInterval);
+	public Acceptor(NodeIdentifier id, int timerInterval, int debugMode) {
+		super(id, timerInterval, debugMode);
 		// TODO Auto-generated constructor stub
 	}
 

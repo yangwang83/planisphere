@@ -14,7 +14,7 @@ import osu.planisphere.Role;
  * This demo shows how to create two nodes and let them exchange
  * messages. These two nodes work in a ping-pong way: the first
  * node sends a message to the second; the second sends it back ...
- * @author yangwang
+ * @author Yang Wang
  *
  */
 public class DemoBasic {
@@ -36,7 +36,7 @@ public class DemoBasic {
 	public static class PingPongNode extends NormalNode{
 
 		public PingPongNode(NodeIdentifier id) {
-			super(id, 5000);
+			super(id, 5000, 0);
 		}
 
 		public void sendOneMessage(NodeIdentifier other){
@@ -59,21 +59,23 @@ public class DemoBasic {
 			}
 			this.sendMessage(msg.getSender(), new PingPongMessage(this.getID(), "haha"));
 		}
-		
 	}
 	
 	public static void main(String args[]) throws Exception{
-		NodeIdentifier masterID = new NodeIdentifier(Role.MASTER, 1);
-		MasterNode masterNode = new MasterNode(masterID);
+		if(args.length!=1){
+			System.out.println("java DemoBasic <id>");
+			System.exit(-1);
+		}
 		
-		NodeIdentifier id1= new NodeIdentifier(Role.DEMO, 1);
-		PingPongNode node1 = new PingPongNode(id1);
+		int id = Integer.parseInt(args[0]);
 		
-		NodeIdentifier id2= new NodeIdentifier(Role.DEMO, 2);
-		PingPongNode node2 = new PingPongNode(id2);
-		
-		node1.sendOneMessage(id2);
-		
+		NodeIdentifier ni= new NodeIdentifier(Role.DEMO, id);
+		PingPongNode node = new PingPongNode(ni);
+		node.start();
+		if(id==2){
+			NodeIdentifier ni1= new NodeIdentifier(Role.DEMO, 1);
+			node.sendOneMessage(ni1);
+		}
 	}
 	
 }

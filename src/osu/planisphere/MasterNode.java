@@ -13,11 +13,10 @@ public class MasterNode extends Node {
 	private HashMap<NodeIdentifier, InetSocketAddress> nodes = new HashMap<NodeIdentifier, InetSocketAddress> ();
 	private Network network;
 
-	public MasterNode(NodeIdentifier id) {
-		super(id, 5000);
+	public MasterNode() {
+		super(new NodeIdentifier(Role.MASTER,1), 5000);
 		this.network = new Network();
 		this.network.init(Configuration.masterAddr.getPort(), this);
-		this.start();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -29,7 +28,7 @@ public class MasterNode extends Node {
 
 	@Override
 	public void handleTimer() {
-		// TODO Auto-generated method stub
+		System.out.println("master handle timer");
 
 	}
 
@@ -61,6 +60,11 @@ public class MasterNode extends Node {
 			}
 		}
 
+	}
+	
+	public static void main(String []args){
+		MasterNode master = new MasterNode();
+		master.start();
 	}
 
 }

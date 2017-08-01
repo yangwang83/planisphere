@@ -34,8 +34,8 @@ public class DemoStepRunning {
 	
 	public static class Sender extends NormalNode{
 
-		public Sender(NodeIdentifier id) {
-			super(id, 5000);
+		public Sender(NodeIdentifier id, int debugMode) {
+			super(id, 5000, debugMode);
 		}
 
 		public void sendMessages(NodeIdentifier other){
@@ -51,13 +51,12 @@ public class DemoStepRunning {
 		public void handleMessage(Message msg) {
 
 		}
-		
 	}
 	
 	public static class Receiver extends NormalNode{
 
-		public Receiver(NodeIdentifier id) {
-			super(id, 5000);
+		public Receiver(NodeIdentifier id, int debugMode) {
+			super(id, 5000, debugMode);
 		}
 
 		@Override
@@ -68,17 +67,24 @@ public class DemoStepRunning {
 		public void handleMessage(Message msg) {
 			System.out.println(this.getID() + " hanldes "+msg);
 		}
+
+		@Override
+		public void start() {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 	
 	
 	public static void main(String args[]) throws Exception{
 		//Create the network and all nodes
+		int debugMode = 0;
 		NodeIdentifier id1= new NodeIdentifier(Role.DEMO, 1);
-		Sender sender = new Sender(id1);
+		Sender sender = new Sender(id1, debugMode);
 		
 		NodeIdentifier id2= new NodeIdentifier(Role.DEMO, 2);
-		Receiver receiver = new Receiver(id2);
+		Receiver receiver = new Receiver(id2, debugMode);
 		
 		StepRunning step = new StepRunning();
 		//sender.addEventHook(step);
