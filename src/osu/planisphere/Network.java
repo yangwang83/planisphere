@@ -22,7 +22,7 @@ public class Network {
 	private ServerSocketThread ssThread = null;
 	private Node node = null;
 	private List<ReceiverThread> receiverThreads = new LinkedList<ReceiverThread>();
-	private final HashMap<InetSocketAddress, Socket> outgoingSockets = new HashMap<InetSocketAddress, Socket>();
+	private final HashMap<InetSocketAddress, ObjectOutputStream> outgoingSockets = new HashMap<InetSocketAddress, ObjectOutputStream>();
 	
 	
 	/*
@@ -47,8 +47,8 @@ public class Network {
 		}
 	}
 	
-	public int getLocalPort(){
-		return ss.getLocalPort();
+	public InetSocketAddress getLocalAddress(){
+		return new InetSocketAddress(ss.getInetAddress(), ss.getLocalPort());
 	}
 	
 	public void close(){
@@ -56,13 +56,13 @@ public class Network {
 			t.terminate();
 		}
 		ssThread.terminate();
-		for(Socket sock : outgoingSockets.values()){
+		/*for(Socket sock : outgoingSockets.values()){
 			try {
 				sock.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 	}
 	
 	private class ServerSocketThread extends Thread{
@@ -127,8 +127,10 @@ public class Network {
 		
 		public void run(){
 			ObjectInputStream ois = null;
+			ObjectOutputStream oos = null;
 			try {
 				ois = new ObjectInputStream(sock.getInputStream());
+				oos = new ObjectOutputStream(sock.getOutputStream());
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;
@@ -140,9 +142,10 @@ public class Network {
 				}
 				try{
 					Message msg = (Message)ois.readObject();
-					node.enqueueMessage(msg);
+					node.enqueueMessage(msg, oos);
 				}
 				catch(IOException e){
+					System.out.println(node.getID()+" got an error");
 					e.printStackTrace();
 					return;
 				} catch (ClassNotFoundException e) {
@@ -154,15 +157,16 @@ public class Network {
 	}
 	
 	public void sendMessage(InetSocketAddress receiver, Message msg){
-		Socket s = null;
+		ObjectOutputStream out = null;
 		synchronized(outgoingSockets){
 			if(outgoingSockets.containsKey(receiver))
-				s = outgoingSockets.get(receiver);
+				out = outgoingSockets.get(receiver);
 			else{
-				s = new Socket();
+				Socket s = new Socket();
 				try {
 					s.connect(receiver);
-					outgoingSockets.put(receiver, s);
+					out = new ObjectOutputStream(s.getOutputStream());
+					outgoingSockets.put(receiver, out);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -171,11 +175,10 @@ public class Network {
 				
 			}
 		}
-		if(s!=null){
-			synchronized(s){
+		if(out!=null){
+			synchronized(out){
 				try {
-					ObjectOutputStream oos = new ObjectOutputStream(s.getOutputStream());
-					oos.writeObject(msg);
+					out.writeObject(msg);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

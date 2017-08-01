@@ -1,17 +1,18 @@
 package osu.planisphere.paxos;
+import java.net.Socket;
 import java.util.TreeMap;
 
 import osu.planisphere.*;
 
-public class Acceptor extends Node{
+public class Acceptor extends NormalNode{
 
 	private int epoch = 0;
 	private int slot = 0;
 	
 	private TreeMap<Integer, Quorum> outstandingProposals = new TreeMap<Integer, Quorum>();
 	
-	public Acceptor(NodeIdentifier id, int timerInterval, Network network) {
-		super(id, timerInterval, network);
+	public Acceptor(NodeIdentifier id, int timerInterval) {
+		super(id, timerInterval);
 		// TODO Auto-generated constructor stub
 	}
 

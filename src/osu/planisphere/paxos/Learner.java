@@ -1,10 +1,10 @@
 package osu.planisphere.paxos;
 import osu.planisphere.*;
 
-public class Learner extends Node{
+public class Learner extends NormalNode{
 
-	public Learner(NodeIdentifier id, int timerInterval, Network network) {
-		super(id, timerInterval, network);
+	public Learner(NodeIdentifier id, int timerInterval) {
+		super(id, timerInterval);
 		// TODO Auto-generated constructor stub
 	}
 

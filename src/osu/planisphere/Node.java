@@ -1,5 +1,8 @@
 package osu.planisphere;
 
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -24,14 +27,22 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class Node extends Thread{
 	
+	private static class MessageAndOut{
+		public Message msg;
+		public ObjectOutputStream out;
+		
+		public MessageAndOut(Message msg, ObjectOutputStream out) {
+			this.msg = msg;
+			this.out = out;
+		}
+	}
+	
 	private boolean running = true;
-	private LinkedBlockingQueue<Message> incomingQueue = 
-			new LinkedBlockingQueue<Message>(Configuration.maxQueueSize);
+	private LinkedBlockingQueue<MessageAndOut> incomingQueue = 
+			new LinkedBlockingQueue<MessageAndOut>(Configuration.maxQueueSize);
 	
 	private NodeIdentifier id;
 	private long timerInterval;
-	protected Network network;
-	private EventHook hook = null;
 	
 	/**
 	 * Constructor
@@ -39,27 +50,20 @@ public abstract class Node extends Thread{
 	 * @param timerInterval: the interval (milliseconds) to trigger timer
 	 * @param network: the network class used to transfer messages
 	 */
-	public Node(NodeIdentifier id, int timerInterval, Network network){
+	public Node(NodeIdentifier id, int timerInterval){
 		this.id = id;
 		this.timerInterval = timerInterval;
-		this.network = network;
+
 	}
 	
 	public NodeIdentifier getID(){
 		return this.id;
 	}
 	
-	/**
-	 * A hook is mainly used to inject failures for testing.
-	 * @param hook
-	 */
-	public void addEventHook(EventHook hook){
-		this.hook = hook;
-	}
 	
-	protected void enqueueMessage(Message msg){
+	protected void enqueueMessage(Message msg, ObjectOutputStream out){
 		try{
-			incomingQueue.put(msg);
+			incomingQueue.put(new MessageAndOut(msg, out));
 		}
 		catch(InterruptedException e){
 			e.printStackTrace();
@@ -72,19 +76,13 @@ public abstract class Node extends Thread{
 		
 		while(running){
 			try{
-				Message msg = incomingQueue.poll(timerInterval/10, TimeUnit.MILLISECONDS);
+				MessageAndOut msg = incomingQueue.poll(timerInterval/10, TimeUnit.MILLISECONDS);
 				if(msg != null){
-					if(hook == null)
-						handleMessage(msg);
-					else
-						hook.handleMessage(msg, this);
+					handleMessage(msg.msg, msg.out);
 				}
 				else{
 					if(System.currentTimeMillis() - lastTimerTime > timerInterval){
-						if(hook == null)
-							handleTimer();
-						else
-							hook.handleTimer(this);
+						handleTimer();
 						lastTimerTime = System.currentTimeMillis();
 					}
 				}
@@ -119,6 +117,6 @@ public abstract class Node extends Thread{
 	 * with handleTimer.
 	 * @param msg: the received message
 	 */
-	public abstract void handleMessage(Message msg);
+	public abstract void handleMessage(Message msg, ObjectOutputStream out);
 	
 }

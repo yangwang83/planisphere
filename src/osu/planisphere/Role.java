@@ -7,5 +7,5 @@ package osu.planisphere;
  *
  */
 public enum Role {
-	CLIENT, ACCEPTOR, LEARNER, DEMO
+	CLIENT, ACCEPTOR, LEARNER, DEMO, MASTER, ENTRYSERVER, SERVER
 }

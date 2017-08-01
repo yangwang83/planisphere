@@ -31,7 +31,7 @@ public class StepRunning implements EventHook {
 		}
 		switch(decision){
 		case 1:
-			node.handleMessage(msg);
+	//		node.handleMessage(msg);
 			break;
 		case 2:
 			break;
@@ -103,7 +103,7 @@ public class StepRunning implements EventHook {
 		}
 		switch(decision){
 		case 1:
-			node.sendMessageInternal(receiver, msg);
+//			node.sendMessageInternal(receiver, msg);
 			break;
 		case 2:
 			break;

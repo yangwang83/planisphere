@@ -5,6 +5,7 @@ import osu.planisphere.Message;
 import osu.planisphere.Network;
 import osu.planisphere.Node;
 import osu.planisphere.NodeIdentifier;
+import osu.planisphere.NormalNode;
 import osu.planisphere.Role;
 
 /**
@@ -30,10 +31,10 @@ public class DemoInjectMessageLoss {
 		}
 	}
 	
-	public static class Sender extends Node{
+	public static class Sender extends NormalNode{
 
-		public Sender(NodeIdentifier id, Network network) {
-			super(id, 5000, network);
+		public Sender(NodeIdentifier id) {
+			super(id, 5000);
 		}
 
 		public void sendMessages(NodeIdentifier other){
@@ -52,10 +53,10 @@ public class DemoInjectMessageLoss {
 		
 	}
 	
-	public static class Receiver extends Node{
+	public static class Receiver extends NormalNode{
 
-		public Receiver(NodeIdentifier id, Network network) {
-			super(id, 5000, network);
+		public Receiver(NodeIdentifier id) {
+			super(id, 5000);
 		}
 
 		@Override
@@ -77,7 +78,7 @@ public class DemoInjectMessageLoss {
 			count++;
 			if(count == 2)
 				return;
-			node.handleMessage(msg);
+//			node.handleMessage(msg);
 			
 		}
 
@@ -89,22 +90,21 @@ public class DemoInjectMessageLoss {
 
 		@Override
 		public void sendMessage(NodeIdentifier receiver, Message msg, Node node) {
-			node.sendMessageInternal(receiver, msg);	
+	//		node.sendMessageInternal(receiver, msg);	
 		}
 		
 	}
 	
 	public static void main(String args[]) throws Exception{
 		//Create the network and all nodes
-		Network network = new Network();
 		NodeIdentifier id1= new NodeIdentifier(Role.DEMO, 1);
-		Sender sender = new Sender(id1, network);
+		Sender sender = new Sender(id1);
 		
 		NodeIdentifier id2= new NodeIdentifier(Role.DEMO, 2);
-		Receiver receiver = new Receiver(id2, network);
+		Receiver receiver = new Receiver(id2);
 		
 		//You can try to comment this line to check the difference
-		receiver.addEventHook(new DropSecondMessage());
+		//receiver.addEventHook(new DropSecondMessage());
 		
 		//Start experiment
 		sender.start();

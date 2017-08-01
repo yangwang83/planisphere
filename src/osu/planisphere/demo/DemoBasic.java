@@ -1,9 +1,13 @@
 package osu.planisphere.demo;
 
+import java.net.Socket;
+
+import osu.planisphere.MasterNode;
 import osu.planisphere.Message;
 import osu.planisphere.Network;
 import osu.planisphere.Node;
 import osu.planisphere.NodeIdentifier;
+import osu.planisphere.NormalNode;
 import osu.planisphere.Role;
 
 /**
@@ -29,10 +33,10 @@ public class DemoBasic {
 		}
 	}
 	
-	public static class PingPongNode extends Node{
+	public static class PingPongNode extends NormalNode{
 
-		public PingPongNode(NodeIdentifier id, Network network) {
-			super(id, 5000, network);
+		public PingPongNode(NodeIdentifier id) {
+			super(id, 5000);
 		}
 
 		public void sendOneMessage(NodeIdentifier other){
@@ -59,17 +63,15 @@ public class DemoBasic {
 	}
 	
 	public static void main(String args[]) throws Exception{
-		//Create the network and all nodes
-		Network network = new Network();
+		NodeIdentifier masterID = new NodeIdentifier(Role.MASTER, 1);
+		MasterNode masterNode = new MasterNode(masterID);
+		
 		NodeIdentifier id1= new NodeIdentifier(Role.DEMO, 1);
-		PingPongNode node1 = new PingPongNode(id1, network);
+		PingPongNode node1 = new PingPongNode(id1);
 		
 		NodeIdentifier id2= new NodeIdentifier(Role.DEMO, 2);
-		PingPongNode node2 = new PingPongNode(id2, network);
+		PingPongNode node2 = new PingPongNode(id2);
 		
-		//Start experiment
-		node1.start();
-		node2.start();
 		node1.sendOneMessage(id2);
 		
 	}

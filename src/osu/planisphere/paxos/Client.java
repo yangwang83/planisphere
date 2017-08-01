@@ -1,13 +1,15 @@
 package osu.planisphere.paxos;
+import java.net.Socket;
+
 import osu.planisphere.*;
 
-public class Client extends Node{
+public class Client extends NormalNode{
 
 	private int clientSequenceID = 0;
 	private NodeIdentifier leaderID = new NodeIdentifier(Role.ACCEPTOR, 0);
 	
-	public Client(NodeIdentifier id, int timerInterval, Network network) {
-		super(id, timerInterval, network);
+	public Client(NodeIdentifier id, int timerInterval) {
+		super(id, timerInterval);
 		// TODO Auto-generated constructor stub
 	}
 	

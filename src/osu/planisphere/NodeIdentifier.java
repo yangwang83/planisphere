@@ -1,12 +1,14 @@
 package osu.planisphere;
 
+import java.io.Serializable;
+
 /**
  * The identifier of a node. It is composed
  * of a role and an ID, such as CLIENT.1, SERVER.2, etc. 
  * @author Yang Wang
  *
  */
-public class NodeIdentifier {
+public class NodeIdentifier implements Serializable {
 
 	private int hashCode;
 	

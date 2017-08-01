@@ -4,9 +4,8 @@ import osu.planisphere.Network;
 import osu.planisphere.Node;
 import osu.planisphere.NodeIdentifier;
 import osu.planisphere.Role;
-import osu.planisphere.DemoBasic.PingPongMessage;
-import osu.planisphere.DemoBasic.PingPongNode;
 
+import java.net.Socket;
 import java.util.*;
 //im going to start with two nodes, then figure out the algorithm for multiple nodes
 public class NumberAdding {
@@ -40,9 +39,9 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 			return num_to_be_summed;
 		}
 		
-		public static class ClientNode extends Node {
-			public ClientNode(NodeIdentifier id, Network network) {
-				super(id, 5000, network);
+		public static class ClientNode extends NormalNode {
+			public ClientNode(NodeIdentifier id) {
+				super(id, 5000);
 			}
 			public void sendSumMessage(ArrayList<Integer> nums, ArrayList<AddingNode> RegularServers, EntryServerNode other)  //only use on entryservernodes
 			{
@@ -58,8 +57,8 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 		public static class EntryServerNode extends AddingNode {
 			public static int sumtotal=0;
 			public static ArrayList<Node> nodelist=new ArrayList<Node>();
-			public EntryServerNode(NodeIdentifier id, Network network) {
-				super(id, network);
+			public EntryServerNode(NodeIdentifier id) {
+				super(id);
 			}
 			
 			@Override
@@ -101,10 +100,10 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 				System.out.println(this.getID() + " gets "+msg);
 			}
 		}
-		public static class AddingNode extends Node{
+		public static class AddingNode extends NormalNode{
 			public static int currentsum=0;
-			public AddingNode(NodeIdentifier id, Network network) {
-				super(id, 5000, network);
+			public AddingNode(NodeIdentifier id) {
+				super(id, 5000);
 			}
 
 			public void sendOneMessage(NodeIdentifier other, ArrayList<Integer> nums){
@@ -149,16 +148,16 @@ public static ArrayList<Integer> sums_from_addingnodes=new ArrayList<Integer>();
 			//Create the network and all nodes
 			Network network = new Network();
 			NodeIdentifier id1= new NodeIdentifier(Role.CLIENT, 1);
-			ClientNode node1 = new ClientNode(id1, network);
+			ClientNode node1 = new ClientNode(id1);
 			
 			NodeIdentifier id2= new NodeIdentifier(Role.ENTRYSERVER, 2);
-			EntryServerNode node2 = new EntryServerNode(id2, network);
+			EntryServerNode node2 = new EntryServerNode(id2);
 			NodeIdentifier id3= new NodeIdentifier(Role.SERVER, 3);
-			AddingNode node3 = new AddingNode(id3, network);
+			AddingNode node3 = new AddingNode(id3);
 			NodeIdentifier id4= new NodeIdentifier(Role.SERVER, 4);
-			AddingNode node4 = new AddingNode(id4, network);
+			AddingNode node4 = new AddingNode(id4);
 			NodeIdentifier id5= new NodeIdentifier(Role.SERVER, 5);
-			AddingNode node5 = new AddingNode(id5, network);
+			AddingNode node5 = new AddingNode(id5);
 			
 			ArrayList<AddingNode> nodelist=new ArrayList<AddingNode>();
 			nodelist.add(node3); nodelist.add(node4); nodelist.add(node5);
