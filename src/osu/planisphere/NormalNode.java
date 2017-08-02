@@ -24,7 +24,9 @@ public abstract class NormalNode extends Node {
 	
 	public NormalNode(NodeIdentifier id, int timerInterval, int debugMode) {
 		super(id, timerInterval);
-		
+		if(debugMode<0||debugMode>2)
+			throw new RuntimeException("Invalid debugMode "+debugMode);
+		this.debugMode = debugMode;
 		this.network = new Network();
 		this.network.init(-1, this);
 		
@@ -51,14 +53,14 @@ public abstract class NormalNode extends Node {
 	public void handleMessage(Message msg, ObjectOutputStream out) {
 		if(debugMode > 0){
 			try {
-				masterOut.writeObject(new ReportActionMessage(this.getID(), ReportActionMessage.Timing.before, ReportActionMessage.Action.handle, msg));
+				masterOut.writeObject(new ReportActionMessage(this.getID(), Timing.before, Action.handle, msg));
 				if(debugMode==2){
 					ReportActionResponseMessage response = (ReportActionResponseMessage)masterIn.readObject();
-					if(response.getResponse() == ReportActionResponseMessage.ActionResponse.dropit)
+					if(response.getResponse() == ActionResponse.dropit)
 						return;
-					else if(response.getResponse() == ReportActionResponseMessage.ActionResponse.killnode)
+					else if(response.getResponse() == ActionResponse.killnode)
 						System.exit(0);
-					else if(response.getResponse() == ReportActionResponseMessage.ActionResponse.replace)
+					else if(response.getResponse() == ActionResponse.replace)
 						msg = response.getMessage();
 				}
 			} catch (IOException e) {
@@ -68,6 +70,18 @@ public abstract class NormalNode extends Node {
 			}
 		}
 		handleMessage(msg);
+		if(debugMode == 2){
+			try {
+				masterOut.writeObject(new ReportActionMessage(this.getID(), Timing.after, Action.handle, msg));
+				ReportActionResponseMessage response = (ReportActionResponseMessage)masterIn.readObject();
+				if(response.getResponse() == ActionResponse.killnode)
+					System.exit(0);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	
@@ -96,7 +110,37 @@ public abstract class NormalNode extends Node {
 				nodes.put(receiver, target);
 			}
 		}
+		if(debugMode > 0){
+			try {
+				masterOut.writeObject(new ReportActionMessage(this.getID(), Timing.before, Action.send, msg));
+				if(debugMode==2){
+					ReportActionResponseMessage response = (ReportActionResponseMessage)masterIn.readObject();
+					if(response.getResponse() == ActionResponse.dropit)
+						return;
+					else if(response.getResponse() == ActionResponse.killnode)
+						System.exit(0);
+					else if(response.getResponse() == ActionResponse.replace)
+						msg = response.getMessage();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 		network.sendMessage(target, msg);
+		if(debugMode == 2){
+			try {
+				masterOut.writeObject(new ReportActionMessage(this.getID(), Timing.after, Action.send, msg));
+				ReportActionResponseMessage response = (ReportActionResponseMessage)masterIn.readObject();
+				if(response.getResponse() == ActionResponse.killnode)
+					System.exit(0);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 
 	}
 

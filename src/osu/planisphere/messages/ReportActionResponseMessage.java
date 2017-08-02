@@ -1,12 +1,11 @@
 package osu.planisphere.messages;
 
+import osu.planisphere.ActionResponse;
 import osu.planisphere.Message;
 import osu.planisphere.NodeIdentifier;
 
 public class ReportActionResponseMessage extends Message{
 
-	public static enum ActionResponse{doit, dropit, killnode, replace};
-	
 	private ActionResponse response;
 	private Message message;
 	

@@ -1,12 +1,11 @@
 package osu.planisphere.messages;
 
+import osu.planisphere.Action;
 import osu.planisphere.Message;
 import osu.planisphere.NodeIdentifier;
+import osu.planisphere.Timing;
 
 public class ReportActionMessage extends Message{
-	
-	public static enum Timing{before, after};
-	public static enum Action{send, handle};
 	
 	private Timing timing;
 	private Action action;
@@ -32,4 +31,8 @@ public class ReportActionMessage extends Message{
 		return this.message;
 	}
 
+	@Override
+	public String toString() {
+		return this.getSender()+" "+timing+" "+action+" "+message;
+	}
 }
