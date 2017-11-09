@@ -1,0 +1,98 @@
+<html>
+<head>
+  <title>Communication in different nodes</title>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <style type="text/css">
+  .frame{
+   margin-top: 35px;
+   padding: 0 30px;
+  }
+
+  .arrow{
+  stroke-width:5;
+  stroke:#000;
+  stroke-dasharray:5, 5;
+  }
+
+  .solid_arrow{
+  stroke-width:5;
+  stroke:#000;
+  stroke-dasharray:0;
+  }
+
+  .solid_fork{
+  stroke-width:5;
+  stroke:red;
+  stroke-dasharray:0;
+  }
+
+  circle{
+  stroke-width:5;
+  stroke:#000;
+  fill:#FFF;
+  }
+
+  .myline{
+  
+  stroke-width:5;
+  stroke:#000;
+  fill:#FFF;
+  }
+
+  #arrow{
+  stroke-width:1;
+  stroke-dasharray:0;   
+  }
+
+  #dialog {
+    display:none;
+  }
+
+  </style>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+<div class="frame">
+  <h1>Communication in different nodes</h1>
+
+  <form id="post-form" method="POST">
+      <input id="message_info" name="msg">
+      <button type="submit">Send</button>
+  </form>
+
+  <button onclick="firmClearMessage()" style="float: right;">Clear the messages</button>
+<br/><br/>
+  <button onclick="firmClearNode()" style="float: right;">Clear the nodes</button>
+</div>
+  <p id="error_msg"></p>
+  <div class="viz"><svg id="mainSvg"></svg></div>
+
+<div id="dialog" title="Please choose your decision">
+    <div class='dialog_title'></div>
+    <button id="accept_msg">Accept it</button>
+    <button id="drop_msg">Drop it</button>
+    <button id="kill_node">Kill node</button>
+</div>
+
+
+  <script>
+    let y0 = 0;
+    var nodes = {{ nodes|safe }};
+    var messages = {{ messages|safe }};
+  </script>
+</body>  
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"
+  ></script>
+  <script
+  src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+  integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+  crossorigin="anonymous"></script>
+
+  <script src="/static/index.js"></script>
+
+
+</html>
