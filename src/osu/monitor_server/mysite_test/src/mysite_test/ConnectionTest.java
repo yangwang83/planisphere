@@ -22,22 +22,22 @@ public class ConnectionTest {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         //deploy the httpserver for handle the request sent from Django server
-        HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
-        server.createContext("/test", new MyHandler());
-        server.start();
+//        HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
+//        server.createContext("/test", new MyHandler());
+//        server.start();
         
         //SendURL("a1","a2","haha","1", "pending");
         
         //send some messages information to the Django server
         String[] nodes = {"a1","a2","a3","a4"};
         Random rand = new Random();
-        for(int i = 0; i < 4; i++) {
+        for(int i = 0; i < 20; i++) {
             String from = nodes[rand.nextInt(nodes.length)];
             String to = nodes[rand.nextInt(nodes.length)];
             if(from.equals(to)) {
                 continue;
             }
-            SendURL(from,to,"haha",String.valueOf(i), "pending");
+            SendURL(from,to,"hi",String.valueOf(i), "pending");
         }
     }
     
