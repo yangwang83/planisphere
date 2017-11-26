@@ -57,6 +57,7 @@ function drawEle(x, y, i) {
   currentNodeNum += 1;
   let currentY = 100 + (currentNodeNum-1)*200
 
+  //draw the cicle for each node
   let circR = 20;
   svg.style("height", parseInt(svg.style("height"))+200);
   svg.append('circle')
@@ -66,8 +67,10 @@ function drawEle(x, y, i) {
       r:circR
     });
 
+  //record the y position for each ndoes
   nodeInfo[i] = {y: currentY};
 
+  //draw the line for each ndoe
   svg.append('line')
     .attr({
       "y1":currentY ,
@@ -77,6 +80,7 @@ function drawEle(x, y, i) {
         "class": "myline"
       })
 
+  //mark the name of nodes
   svg.append('text').
   attr({
     x:startPosX,
@@ -106,6 +110,7 @@ function drawArrow(from, to, timeStart, content, status, interval) {
 
   updateWidth(timeEnd)
 
+  //if the status is pending, this line is dash
   if (status == "pending") {
     line_id = getID(from, to, timeStart)
     svg.append('line')
@@ -135,7 +140,7 @@ function drawArrow(from, to, timeStart, content, status, interval) {
         openDialog(from, to, timeStart, content, status);
         })
       .style("cursor",'pointer');
-
+  //if the status is accepted or dropped, we need to draw the real line
   } else if (status == "accepted" || status == "dropped") {
       svg.append('line')
        .attr({
@@ -153,16 +158,38 @@ function drawArrow(from, to, timeStart, content, status, interval) {
          "content": content,
          "status": status
        })
+       //we also need to draw fork for the dropped line
     if (status == "dropped") {
       drawFork(from, to, timeStart, interval);
     }
   }
+  addMessageContent(from, to, timeStart, interval, content)
+}
+
+//we need add content beside the arrow
+function addMessageContent(from, to, timeStart, interval, content) {
+  if (!interval)
+    interval = 1;
+  timeEnd = +timeStart + interval;
+
+  content_x = (getTimePosX(timeStart) + getTimePosX(timeEnd)) / 2 + 10;
+  content_y = (nodeInfo[to].y + nodeInfo[from].y) / 2;
+
+  svg.append('text').
+  attr({
+    x:content_x,
+    y:content_y,
+    r:20,
+    "font-size":'20px',
+    fill:'black'
+  }).text(""+content)
 }
 
 //if we drop a message, we draw fork in the middle of the message
 function drawFork(from, to, timeStart, interval) {
   if (!interval)
     interval = 1;
+  timeEnd = +timeStart + interval;
 
   center_x = (getTimePosX(timeStart) + getTimePosX(timeEnd)) / 2;
   center_y = (nodeInfo[to].y + nodeInfo[from].y) / 2;
@@ -172,7 +199,6 @@ function drawFork(from, to, timeStart, interval) {
   x2 = center_x + forklength / 2
   y2 = center_y - forklength / 2 
 
-  timeEnd = +timeStart + interval;
   svg.append('line')
      .attr({
        "class":"solid_fork",
@@ -442,11 +468,11 @@ $( document ).ready(function() {
 
     drawArrow(from , to, time, content, status);
   }
-  
+
   //keeping the track of all changes in the database
-  //window.setInterval(IntervalUpdateMessage, 500);
+  window.setInterval(IntervalUpdateMessage, 500);
 
-
+  //define the dialog button functions
   $('#accept_msg').click(function() {
     if(ginfo.from === undefined)
       return;

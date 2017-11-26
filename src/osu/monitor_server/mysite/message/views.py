@@ -8,6 +8,10 @@ from django.shortcuts import render
 from models import *
 from django.views.decorators.csrf import csrf_exempt
 
+#global variable
+user_decision = None
+
+#Send the nodes and messages information in the database
 @csrf_exempt
 def index(request):
     all_nodes = Nodes.objects.all()
@@ -43,6 +47,7 @@ def index(request):
         nodes.append(n)
     return render(request, 'index.html', {'nodes':json.dumps(nodes), 'messages': json.dumps(messages)})
 
+#After receive the messages from the users and put them to database
 @csrf_exempt
 def putSendMsgToDB(request):
     print(request.POST['msg'])
@@ -65,19 +70,24 @@ def putSendMsgToDB(request):
 
     return render(request, 'index.json', context, content_type='application/json')
 
+#After receive the nodes information from the users and update them in database
 @csrf_exempt
 def updateNodeInDB(request):
+    global user_decision
     nodeid = request.POST['nodeid']
     status = request.POST['status']
     nodes = Nodes.objects.filter(NodeID=nodeid)
     for n in nodes:
         n.Status = status
         n.save()
+    user_decision = status
     context = {}
     return render(request, 'index.json', context, content_type='application/json')
 
+#After receive the messages from the users and update them in database
 @csrf_exempt
 def updateSendMsgToDB(request):
+    global user_decision
     source = request.POST['from']
     destination = request.POST['to']
     timeStart = request.POST['timeStart']
@@ -87,9 +97,8 @@ def updateSendMsgToDB(request):
     for m in ms:
         m.Status = status
         m.save()
-
+    user_decision = status
     context = {}
-
     context['source'] = source
     context['destination'] = destination
     context['content'] = content
@@ -98,6 +107,7 @@ def updateSendMsgToDB(request):
 
     return render(request, 'index.json', context, content_type='application/json')
 
+#Get the messages which are later than time
 @csrf_exempt
 def intervalUpdateMsgToDB(request, time):
     if time == 'undefined':
@@ -113,6 +123,7 @@ def intervalUpdateMsgToDB(request, time):
     context = {"max_time": max_time, 'posts': info}
     return render(request, 'posts.json', context, content_type='application/json')
 
+#Clear the messages database
 @csrf_exempt
 def clearDB(request):
     print "it will clear the message database"
@@ -120,6 +131,7 @@ def clearDB(request):
     context = {}
     return render(request, 'index.json', context, content_type='application/json')
 
+#Clear the nodes database
 @csrf_exempt
 def clearNodeDB(request):
     print "it will clear the node database"
@@ -127,6 +139,7 @@ def clearNodeDB(request):
     context = {}
     return render(request, 'index.json', context, content_type='application/json')
 
+#Example for receiving and sending http requests with java server
 @csrf_exempt
 def testMsg(request):
     source = (request.POST['source'])
@@ -146,3 +159,20 @@ def testMsg(request):
     # print f.read()
 
     return HttpResponse('Hello world')
+
+@csrf_exempt
+def reponseMsg(request):
+    source = (request.POST['source'])
+    destination = (request.POST['destination'])
+    content = (request.POST['content'])
+    time = (request.POST['time'])
+    status = (request.POST['status'])
+    new_msg = Messages(Source=source, Destination=destination, Content=content, Time=int(time), Status=status)
+    new_msg.save()
+    global user_decision
+    while user_decision is None:
+        continue
+
+    decision = user_decision
+    user_decision = None
+    return HttpResponse(decision)

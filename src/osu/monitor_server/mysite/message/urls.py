@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^clear_msg$', views.clearDB, name='clear'),
     url(r'^clear_node$', views.clearNodeDB, name='clearnode'),
     url(r'^test_msg$', views.testMsg, name='test'),
+    url(r'^reponse_msg$', views.reponseMsg, name='reponse'),
     url(r'^interval_update_msg/(?P<time>.+)$', views.intervalUpdateMsgToDB, name='interval')
 ]
