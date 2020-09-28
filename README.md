@@ -5,3 +5,6 @@ Planisphere is a project platform to build and visualize distributed protocols (
 2. It allows the user to drop and re-order messages and/or kill nodes during one test.
 
 3. It visualizes the whole execution in a web page and allows the user to customize the drop/re-order/kill in the web page
+
+![screenshot](https://github.com/yangwang83/planisphere/blob/master/screenshot.png)
+
