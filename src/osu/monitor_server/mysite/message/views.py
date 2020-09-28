@@ -1,11 +1,10 @@
 from django.http import HttpResponse
 import json
 from datetime import datetime
-import urllib2
 import urllib
 import datetime
 from django.shortcuts import render
-from models import *
+from message.models import *
 from django.views.decorators.csrf import csrf_exempt
 
 #global variable
@@ -126,7 +125,7 @@ def intervalUpdateMsgToDB(request, time):
 #Clear the messages database
 @csrf_exempt
 def clearDB(request):
-    print "it will clear the message database"
+    print("it will clear the message database")
     Messages.objects.all().delete()
     context = {}
     return render(request, 'index.json', context, content_type='application/json')
@@ -134,7 +133,7 @@ def clearDB(request):
 #Clear the nodes database
 @csrf_exempt
 def clearNodeDB(request):
-    print "it will clear the node database"
+    print("it will clear the node database")
     Nodes.objects.all().delete()
     context = {}
     return render(request, 'index.json', context, content_type='application/json')
